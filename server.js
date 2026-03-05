@@ -1,42 +1,49 @@
-const express = require('express');
-const cors = require('cors');
-const app = express();
-const PORT = process.env.PORT || 3000;
-
-app.use(cors());
-app.use(express.json({ limit: '10mb' }));
-
+const http = require('http');
 const bots = {};
 const bookings = {};
 
-app.post('/api/bot', (req, res) => {
-  const { id, data } = req.body;
-  if (!id || !data) return res.status(400).json({ error: 'Faltan datos' });
-  bots[id] = data;
-  res.json({ ok: true, id });
+const server = http.createServer((req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); 
+  
+  if (req.method === 'OPTIONS') {
+    res.writeHead(200); res.end(); return;
+  }
+
+  let body = '';
+  req.on('data', d => body += d);
+  req.on('end', () => {
+    const url = req.url;
+    res.setHeader('Content-Type', 'application/json');
+
+    if (req.method === 'POST' && url === '/api/bot') {
+      const { id, data } = JSON.parse(body || '{}');
+      if (!id || !data) { res.writeHead(400); res.end('{"error":"faltan datos"}'); return; }
+      bots[id] = data;
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, id }));
+
+    } else if (req.method === 'GET' && url.startsWith('/api/bot/')) {
+      const id = url.split('/api/bot/')[1];
+      if (!bots[id]) { res.writeHead(404); res.end('{"error":"no encontrado"}'); return; }
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, data: bots[id] }));
+
+    } else if (req.method === 'GET' && url.startsWith('/api/bookings/')) {
+      const id = url.split('/api/bookings/')[1];
+      res.writeHead(200); res.end(JSON.stringify({ ok: true, bookings: bookings[id] || {} }));
+
+    } else if (req.method === 'POST' && url.startsWith('/api/bookings/')) {
+      const id = url.split('/api/bookings/')[1];
+      const { date_key, time_slot } = JSON.parse(body || '{}');
+      if (!bookings[id]) bookings[id] = {};
+      if (!bookings[id][date_key]) bookings[id][date_key] = [];
+      bookings[id][date_key].push(time_slot);
+      res.writeHead(200); res.end('{"ok":true}');
+
+    } else {
+      res.writeHead(200); res.end('"ServiceBot corriendo"');
+    }
+  });
 });
 
-app.get('/api/bot/:id', (req, res) => {
-  const data = bots[req.params.id];
-  if (!data) return res.status(404).json({ error: 'No encontrado' });
-  res.json({ ok: true, data });
-});
-
-app.get('/api/bookings/:id', (req, res) => {
-  res.json({ ok: true, bookings: bookings[req.params.id] || {} });
-});
-
-app.post('/api/bookings/:id', (req, res) => {
-  const { date_key, time_slot } = req.body;
-  if (!date_key || !time_slot) return res.status(400).json({ error: 'Faltan datos' });
-  if (!bookings[req.params.id]) bookings[req.params.id] = {};
-  if (!bookings[req.params.id][date_key]) bookings[req.params.id][date_key] = [];
-  if (bookings[req.params.id][date_key].includes(time_slot))
-    return res.status(409).json({ error: 'Ya reservado' });
-  bookings[req.params.id][date_key].push(time_slot);
-  res.json({ ok: true });
-});
-
-app.get('*', (req, res) => res.send('ServiceBot corriendo'));
-
-app.listen(PORT, () => console.log('Puerto', PORT));
+server.listen(process.env.PORT || 3000, () => console.log('Puerto', process.env.PORT || 3000));
