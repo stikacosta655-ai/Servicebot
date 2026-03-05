@@ -1,12 +1,12 @@
 const express = require('express');
-const cors    = require('cors');
-const app     = express();
-const PORT    = process.env.PORT || 3000;
+const cors = require('cors');
+const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-const bots     = {};
+const bots = {};
 const bookings = {};
 
 app.post('/api/bot', (req, res) => {
@@ -37,6 +37,6 @@ app.post('/api/bookings/:id', (req, res) => {
   res.json({ ok: true });
 });
 
-app.get('/', (req, res) => res.send('ServiceBot API corriendo'));
+app.get('*', (req, res) => res.send('ServiceBot corriendo'));
 
-app.listen(PORT, () => console.log('ServiceBot en puerto', PORT));
+app.listen(PORT, () => console.log('Puerto', PORT));
