@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>ServiceBot</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── RESET & BASE ─────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0a0a0f;
+  --ink2:#13131a;
+  --ink3:#1c1c26;
+  --border:#ffffff12;
+  --border2:#ffffff20;
+  --text:#f2f0ec;
+  --muted:#6b6880;
+  --muted2:#908da0;
+  --accent:#00e5a0;
+  --accent-dim:#00e5a018;
+  --accent-glow:0 0 32px #00e5a040;
+  --warn:#ff6b35;
+  --radius:18px;
+  --radius-sm:10px;
+  /* service colors */
+  --barber:#e84a4a;
+  --dental:#4a9de8;
+  --mechanic:#4ae87a;
+  --restaurant:#e8a44a;
+  --nails:#b44ae8;
+}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Cabinet Grotesk',sans-serif;
+  background:var(--ink);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+/* ── PAGES ───────────────────────────────────── */
+.page{display:none;min-height:100vh;flex-direction:column;animation:fadeUp .35s ease;}
+.page.active{display:flex;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── TYPOGRAPHY ──────────────────────────────── */
+.display{font-family:'Clash Display',sans-serif;font-weight:700;letter-spacing:-1.5px;line-height:1;}
+.label{font-size:11px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);}
+
+/* ── BUTTONS ─────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:none;border-radius:99px;cursor:pointer;font-family:'Cabinet Grotesk',sans-serif;font-weight:700;transition:all .2s;white-space:nowrap;}
+.btn-accent{background:var(--accent);color:var(--ink);font-size:15px;padding:14px 28px;}
+.btn-accent:hover{filter:brightness(1.1);transform:translateY(-2px);box-shadow:var(--accent-glow);}
+.btn-ghost{background:var(--ink3);color:var(--text);font-size:14px;padding:12px 22px;border:1px solid var(--border2);}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);}
+.btn-outline{background:transparent;color:var(--muted2);font-size:13px;padding:10px 18px;border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--border2);color:var(--text);}
+.btn-wa{background:#25d366;color:#fff;font-size:15px;padding:15px 28px;}
+.btn-wa:hover{background:#20bc5a;transform:translateY(-2px);box-shadow:0 8px 24px #25d36640;}
+.btn-sm{font-size:12px;padding:8px 14px;}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:10px;}
+
+/* ── INPUTS ──────────────────────────────────── */
+.input,.textarea{
+  width:100%;background:var(--ink3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  color:var(--text);font-family:'Cabinet Grotesk',sans-serif;font-size:14px;
+  padding:12px 14px;outline:none;transition:border-color .2s;
+}
+.input:focus,.textarea:focus{border-color:var(--accent);}
+.textarea{resize:vertical;min-height:72px;}
+.input-group{margin-bottom:16px;}
+.input-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:7px;}
+
+/* ── CARD ────────────────────────────────────── */
+.card{background:var(--ink2);border:1px solid var(--border);border-radius:var(--radius);}
+
+/* ── DIVIDER ─────────────────────────────────── */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+
+/* ══════════════════════════════════════════════
+   PAGE: HOME
+══════════════════════════════════════════════ */
+#page-home{
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%,#00e5a015 0%,transparent 70%),
+    var(--ink);
+}
+
+.home-nav{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:24px 32px;
+}
+.brand{
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:20px;
+  display:flex;align-items:center;gap:8px;
+}
+.brand-dot{
+  width:8px;height:8px;border-radius:50%;background:var(--accent);
+  box-shadow:var(--accent-glow);
+}
+.pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--ink3);border:1px solid var(--border2);border-radius:99px;
+  padding:5px 12px;font-size:12px;color:var(--muted2);font-weight:500;
+}
+.pill-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);}
+
+.hero{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:40px 24px;gap:24px;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent-dim);border:1px solid var(--accent)30;
+  border-radius:99px;padding:6px 16px;
+  font-size:12px;font-weight:700;letter-spacing:1px;color:var(--accent);
+}
+.hero-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(42px,9vw,88px);
+  font-weight:700;letter-spacing:-3px;line-height:.95;
+  max-width:760px;
+}
+.hero-title .line2{color:var(--accent);}
+.hero-sub{
+  font-size:17px;color:var(--muted2);max-width:460px;line-height:1.65;font-weight:500;
+}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+/* Services grid */
+.services-wrap{padding:0 24px 80px;}
+.services-header{text-align:center;margin-bottom:28px;}
+.services-header .label{margin-bottom:10px;display:block;}
+.services-header h2{
+  font-family:'Clash Display',sans-serif;font-size:28px;font-weight:700;letter-spacing:-1px;
+}
+.services-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;max-width:860px;margin:0 auto;
+}
+.svc-card{
+  background:var(--ink2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 16px 22px;display:flex;flex-direction:column;align-items:center;gap:14px;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden;user-select:none;
+}
+.svc-card::after{
+  content:'';position:absolute;inset:0;border-radius:var(--radius);
+  border:2px solid transparent;transition:border-color .25s;
+}
+.svc-card:hover{background:var(--ink3);transform:translateY(-5px);box-shadow:0 16px 40px #0008;}
+.svc-card:hover::after{border-color:var(--c,#fff);}
+.svc-card[data-s="barber"]{--c:var(--barber);}
+.svc-card[data-s="dental"]{--c:var(--dental);}
+.svc-card[data-s="mechanic"]{--c:var(--mechanic);}
+.svc-card[data-s="restaurant"]{--c:var(--restaurant);}
+.svc-card[data-s="nails"]{--c:var(--nails);}
+.svc-emoji{font-size:42px;filter:drop-shadow(0 2px 8px #0006);}
+.svc-label{font-family:'Clash Display',sans-serif;font-weight:600;font-size:14px;text-align:center;}
+.svc-tag{
+  font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+  padding:3px 10px;border-radius:99px;
+  background:color-mix(in srgb,var(--c) 15%,transparent);
+  color:var(--c);border:1px solid color-mix(in srgb,var(--c) 30%,transparent);
+}
+
+/* Stats bar */
+.stats-bar{
+  display:flex;justify-content:center;gap:40px;padding:32px 24px;
+  border-top:1px solid var(--border);border-bottom:1px solid var(--border);
+  margin-bottom:48px;flex-wrap:wrap;
+}
+.stat{text-align:center;}
+.stat-num{
+  font-family:'Clash Display',sans-serif;font-size:32px;font-weight:700;
+  color:var(--accent);letter-spacing:-1px;
+}
+.stat-lbl{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
+
+/* ══════════════════════════════════════════════
+   PAGE: ADMIN
+══════════════════════════════════════════════ */
+#page-admin{background:var(--ink);}
+.admin-header{
+  display:flex;align-items:center;gap:14px;
+  padding:18px 28px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.admin-header .brand{font-size:16px;}
+.svc-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 14px;border-radius:99px;font-size:12px;font-weight:700;
+}
+.admin-layout{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;
+  overflow:hidden;
+}
+@media(max-width:720px){
+  .admin-layout{grid-template-columns:1fr;}
+  .admin-preview-col{display:none;}
+}
+.admin-form-col{
+  padding:28px;overflow-y:auto;
+  max-height:calc(100vh - 68px);
+  border-right:1px solid var(--border);
+}
+.admin-preview-col{
+  padding:28px;overflow-y:auto;
+  max-height:calc(100vh - 68px);
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+}
+
+/* Logo upload */
+.logo-row{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.logo-upload{
+  width:60px;height:60px;border-radius:50%;
+  border:2px dashed var(--border2);background:var(--ink3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;cursor:pointer;overflow:hidden;flex-shrink:0;
+  position:relative;transition:border-color .2s;
+}
+.logo-upload:hover{border-color:var(--accent);}
+.logo-upload img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+.logo-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+/* Option items */
+.opt-item{
+  background:var(--ink3);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px;margin-bottom:10px;
+}
+.opt-img-upload{
+  width:52px;height:52px;border-radius:10px;border:1px dashed var(--border2);
+  background:var(--ink);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;overflow:hidden;flex-shrink:0;position:relative;font-size:22px;
+  transition:border-color .2s;
+}
+.opt-img-upload:hover{border-color:var(--accent);}
+.opt-img-upload img{width:100%;height:100%;object-fit:cover;}
+.opt-img-upload input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;}
+
+.btn-add-opt{
+  display:flex;align-items:center;gap:8px;
+  width:100%;padding:11px 16px;border-radius:var(--radius-sm);
+  background:transparent;border:1px dashed var(--border);
+  color:var(--muted);font-family:'Cabinet Grotesk',sans-serif;
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;margin-top:6px;
+}
+.btn-add-opt:hover{border-color:var(--accent);color:var(--accent);}
+
+/* Phone mockup */
+.phone-mockup{
+  width:250px;background:var(--ink2);border-radius:38px;
+  border:5px solid var(--ink3);overflow:hidden;
+  box-shadow:0 24px 64px #000a,0 0 0 1px var(--border);
+}
+.phone-notch{
+  background:var(--ink);height:28px;display:flex;
+  align-items:center;justify-content:center;
+}
+.phone-notch-bar{
+  width:60px;height:4px;background:var(--ink3);border-radius:99px;
+}
+.phone-screen{padding:14px;min-height:360px;}
+.phone-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.phone-logo-circle{
+  width:32px;height:32px;border-radius:50%;overflow:hidden;
+  background:var(--ink3);display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;
+}
+.phone-logo-circle img{width:100%;height:100%;object-fit:cover;}
+.phone-biz-name{font-family:'Clash Display',sans-serif;font-weight:700;font-size:14px;}
+.phone-biz-desc{font-size:10px;color:var(--muted);margin-bottom:10px;}
+.phone-opt-row{
+  background:var(--ink3);border-radius:10px;padding:9px;
+  margin-bottom:7px;display:flex;align-items:center;gap:8px;
+}
+.phone-opt-thumb{
+  width:34px;height:34px;border-radius:7px;overflow:hidden;
+  background:var(--ink);display:flex;align-items:center;
+  justify-content:center;font-size:16px;flex-shrink:0;
+}
+.phone-opt-thumb img{width:100%;height:100%;object-fit:cover;}
+.phone-opt-name{font-family:'Clash Display',sans-serif;font-weight:600;font-size:11px;}
+.phone-opt-price{font-size:10px;color:var(--accent);margin-top:1px;}
+
+/* Link box */
+.link-box{
+  background:var(--ink3);border:1px solid var(--border2);border-radius:var(--radius-sm);
+  padding:16px;width:100%;
+}
+.link-box-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+.link-row{display:flex;gap:8px;}
+.link-value{
+  flex:1;background:var(--ink);border:1px solid var(--border);border-radius:8px;
+  color:var(--accent);font-size:11px;font-family:monospace;padding:9px 12px;outline:none;
+}
+
+/* ══════════════════════════════════════════════
+   PAGE: CLIENT
+══════════════════════════════════════════════ */
+#page-client{background:var(--ink);}
+.client-topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 24px;border-bottom:1px solid var(--border);
+}
+.client-hero-section{
+  padding:40px 24px 28px;text-align:center;
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+}
+.client-logo{
+  width:76px;height:76px;border-radius:50%;overflow:hidden;
+  border:3px solid var(--border2);box-shadow:0 4px 24px #0006;
+  display:flex;align-items:center;justify-content:center;font-size:36px;
+  background:var(--ink2);flex-shrink:0;
+}
+.client-logo img{width:100%;height:100%;object-fit:cover;}
+.client-biz-title{
+  font-family:'Clash Display',sans-serif;font-size:clamp(24px,6vw,42px);
+  font-weight:700;letter-spacing:-1.5px;
+}
+.client-biz-sub{font-size:15px;color:var(--muted2);max-width:400px;font-weight:500;}
+
+/* Options grid */
+.opts-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:14px;padding:0 24px 32px;max-width:880px;margin:0 auto;width:100%;
+}
+@media(max-width:480px){.opts-grid{grid-template-columns:1fr 1fr;gap:10px;padding:0 14px 24px;}}
+.opt-card{
+  background:var(--ink2);border:2px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;cursor:pointer;
+  transition:all .22s;
+}
+.opt-card:hover{border-color:var(--accent)30;transform:translateY(-4px);box-shadow:0 12px 32px #0005;}
+.opt-card.selected{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
+.opt-card-img{
+  width:100%;height:120px;background:var(--ink3);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;position:relative;overflow:hidden;
+}
+.opt-card-img img{width:100%;height:100%;object-fit:cover;}
+.opt-check{
+  position:absolute;top:8px;right:8px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--accent);color:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  opacity:0;transition:opacity .2s;
+}
+.opt-card.selected .opt-check{opacity:1;}
+.opt-card-body{padding:12px;}
+.opt-card-name{font-family:'Clash Display',sans-serif;font-weight:600;font-size:13px;margin-bottom:3px;}
+.opt-card-desc{font-size:11px;color:var(--muted2);line-height:1.4;margin-bottom:6px;}
+.opt-card-price{
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;color:var(--accent);
+}
+
+/* Flow sections */
+.flow-section{
+  background:var(--ink2);border-top:1px solid var(--border);
+  padding:28px 24px;
+}
+.flow-title{
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:20px;
+  text-align:center;margin-bottom:5px;
+}
+.flow-sub{text-align:center;font-size:14px;color:var(--muted2);margin-bottom:24px;font-weight:500;}
+.sel-badge{
+  background:var(--accent-dim);border:1px solid var(--accent)30;
+  border-radius:var(--radius-sm);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;max-width:600px;margin-left:auto;margin-right:auto;
+}
+.sel-badge-name{font-family:'Clash Display',sans-serif;font-weight:600;font-size:14px;}
+.sel-badge-price{color:var(--accent);font-weight:700;font-size:14px;}
+
+/* Calendar */
+.cal-wrap{max-width:600px;margin:0 auto 24px;}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-month-lbl{font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;text-transform:capitalize;}
+.cal-btn{
+  background:var(--ink3);border:1px solid var(--border);color:var(--muted2);
+  border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:16px;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;
+}
+.cal-btn:hover{border-color:var(--accent);color:var(--accent);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dname{text-align:center;font-size:10px;font-weight:700;letter-spacing:1px;color:var(--muted);padding:5px 0;}
+.cal-day{
+  aspect-ratio:1;display:flex;align-items:center;justify-content:center;
+  border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;
+  transition:all .18s;border:2px solid transparent;
+}
+.cal-day.empty{cursor:default;}
+.cal-day.past{color:#ffffff18;cursor:not-allowed;}
+.cal-day.avail:hover{background:var(--ink3);border-color:var(--accent);color:var(--accent);}
+.cal-day.sel{background:var(--accent);color:var(--ink);border-color:var(--accent);}
+.cal-day.full{
+  background:#3a0e0e;border-color:var(--warn)40;color:var(--warn);
+  cursor:not-allowed;
+}
+.time-btn{padding:8px 14px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:2px solid var(--border2);background:var(--ink2);color:var(--fg);transition:all .15s;}
+.time-btn.avail:hover{border-color:var(--accent);color:var(--accent);}
+.time-btn.sel{background:var(--accent);color:var(--ink);border-color:var(--accent);}
+.time-btn.booked{background:#3a0e0e;border-color:#e84a4a60;color:#e84a4a;cursor:not-allowed;opacity:0.8;}
+.appt-card{background:var(--ink2);border:1px solid var(--border2);border-radius:12px;padding:14px 16px;margin-bottom:10px;}
+.appt-card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.appt-card-name{font-weight:700;font-size:15px;}
+.appt-card-time{font-size:13px;color:var(--accent);font-weight:600;}
+.appt-card-detail{font-size:13px;color:var(--muted2);}
+.btn-cancel-appt{background:#3a0e0e;border:1px solid #e84a4a60;color:#e84a4a;border-radius:8px;padding:6px 14px;font-size:13px;font-weight:600;cursor:pointer;}
+.btn-cancel-appt:hover{background:#e84a4a;color:#fff;}
+.cal-day.full::after{
+  content:'';display:block;width:4px;height:4px;border-radius:50%;
+  background:var(--warn);position:absolute;bottom:3px;
+}
+.cal-legend{display:flex;gap:14px;justify-content:center;margin-top:12px;flex-wrap:wrap;}
+.cal-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted2);}
+.cal-legend-dot{width:10px;height:10px;border-radius:3px;}
+
+/* Time slots */
+.slots-wrap{max-width:600px;margin:0 auto 22px;}
+.slots-title{font-family:'Clash Display',sans-serif;font-weight:600;font-size:14px;text-align:center;margin-bottom:12px;}
+.slots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px;}
+.slot{
+  background:var(--ink3);border:2px solid var(--border);border-radius:10px;
+  padding:11px 6px;cursor:pointer;font-family:'Clash Display',sans-serif;
+  font-weight:600;font-size:13px;text-align:center;transition:all .18s;color:var(--text);
+}
+.slot:hover{border-color:var(--accent);color:var(--accent);}
+.slot.sel{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+.slot.taken{
+  background:#3a0e0e;border-color:var(--warn)30;color:var(--warn)60;
+  cursor:not-allowed;text-decoration:line-through;opacity:.6;
+}
+
+/* Client form */
+.client-form{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:600px;margin:0 auto;}
+@media(max-width:520px){.client-form{grid-template-columns:1fr;}}
+
+/* Table selector */
+.table-wrap{max-width:560px;margin:0 auto 22px;}
+.table-title{font-family:'Clash Display',sans-serif;font-weight:700;font-size:15px;text-align:center;margin-bottom:14px;}
+.table-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;}
+.table-btn{
+  background:var(--ink3);border:2px solid var(--border);border-radius:10px;
+  padding:13px 4px;cursor:pointer;font-family:'Clash Display',sans-serif;
+  font-weight:700;font-size:13px;text-align:center;transition:all .18s;color:var(--text);
+}
+.table-btn:hover{border-color:var(--accent);color:var(--accent);}
+.table-btn.sel{background:var(--accent-dim);border-color:var(--accent);color:var(--accent);}
+
+/* Send button row */
+.send-row{max-width:600px;margin:18px auto 0;display:flex;flex-direction:column;gap:10px;}
+
+/* ══════════════════════════════════════════════
+   PAGE: CONFIRMATION
+══════════════════════════════════════════════ */
+#page-confirm{
+  align-items:center;justify-content:center;
+  background:radial-gradient(ellipse 60% 40% at 50% 50%,#00e5a008 0%,var(--ink) 70%);
+}
+.confirm-card{
+  background:var(--ink2);border:1px solid var(--border2);border-radius:24px;
+  padding:44px 36px;max-width:460px;width:90%;text-align:center;
+  position:relative;overflow:hidden;
+}
+.confirm-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--accent),#00b8ff);
+}
+.confirm-anim{font-size:64px;animation:pop .5s cubic-bezier(.34,1.56,.64,1);}
+@keyframes pop{from{transform:scale(0);opacity:0;}to{transform:scale(1);opacity:1;}}
+.confirm-title{
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:26px;
+  letter-spacing:-1px;margin:16px 0 8px;
+}
+.confirm-sub{font-size:14px;color:var(--muted2);margin-bottom:28px;line-height:1.6;font-weight:500;}
+.confirm-details{
+  background:var(--ink3);border:1px solid var(--border);border-radius:14px;
+  padding:18px;text-align:left;margin-bottom:24px;
+}
+.confirm-row{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;gap:12px;
+}
+.confirm-row:last-child{border-bottom:none;}
+.confirm-row-lbl{color:var(--muted2);font-weight:500;flex-shrink:0;}
+.confirm-row-val{font-weight:700;text-align:right;}
+.confirm-btns{display:flex;flex-direction:column;gap:10px;}
+
+/* ── TOAST ───────────────────────────────────── */
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--ink3);border:1px solid var(--border2);color:var(--text);
+  font-weight:600;font-size:14px;padding:12px 22px;border-radius:99px;
+  box-shadow:0 8px 32px #000a;transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  z-index:999;white-space:nowrap;pointer-events:none;
+}
+.toast.show{transform:translateX(-50%) translateY(0);}
+
+/* ── UTILS ───────────────────────────────────── */
+.cs{color-scheme:dark;}
+@media(max-width:480px){
+  .home-nav{padding:18px;}
+  .hero{padding:28px 18px;}
+  .confirm-card{padding:32px 20px;}
+  .flow-section{padding:24px 16px;}
+}
+
+/* ── LOADING OVERLAY ─────────────────────────── */
+.loading-overlay{
+  position:fixed;inset:0;background:var(--ink);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:18px;z-index:9999;opacity:1;transition:opacity .4s;
+}
+.loading-overlay.hidden{opacity:0;pointer-events:none;}
+.loading-spinner{
+  width:48px;height:48px;border:3px solid var(--border2);
+  border-top-color:var(--accent);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-family:'Clash Display',sans-serif;font-size:16px;color:var(--muted2);}
+.loading-sub{font-size:13px;color:var(--muted);text-align:center;max-width:280px;line-height:1.6;}
+</style>
+</head>
+<body class="cs">
+
+<!-- ══════════════════════════════════════════
+     HOME
+══════════════════════════════════════════ -->
+<div class="loading-overlay hidden" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">Guardando bot...</div>
+  <div class="loading-sub" id="loading-sub"></div>
+</div>
+
+<div id="page-home" class="page active">
+  <nav class="home-nav">
+    <div class="brand"><div class="brand-dot"></div>ServiceBot</div>
+    <div class="pill"><div class="pill-dot"></div>v3.0</div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-eyebrow">🤖 Bot inteligente de servicios</div>
+    <h1 class="hero-title display">
+      Tu negocio<br><span class="line2">automatizado.</span>
+    </h1>
+    <p class="hero-sub">Configura tu bot con imágenes, calendario de citas y recibe reservas directamente en WhatsApp.</p>
+    <div class="hero-actions">
+      <button class="btn btn-accent" onclick="scrollToServices()">✦ Comenzar ahora</button>
+      <button class="btn btn-ghost" onclick="scrollToServices()">Ver servicios</button>
+    </div>
+  </section>
+
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-lbl">Servicios</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-lbl">Reservas</div></div>
+    <div class="stat"><div class="stat-num">0$</div><div class="stat-lbl">Costo</div></div>
+    <div class="stat"><div class="stat-num">📲</div><div class="stat-lbl">WhatsApp</div></div>
+  </div>
+
+  <section class="services-wrap" id="services-anchor">
+    <div class="services-header">
+      <span class="label">Elige tu negocio</span>
+      <h2 class="display">¿Qué tipo de servicio ofreces?</h2>
+    </div>
+    <div class="services-grid" id="services-grid">
+      <div class="svc-card" data-s="barber">
+        <div class="svc-emoji">✂️</div>
+        <div class="svc-label">Barbería</div>
+        <div class="svc-tag">Citas</div>
+      </div>
+      <div class="svc-card" data-s="dental">
+        <div class="svc-emoji">🦷</div>
+        <div class="svc-label">Odontología</div>
+        <div class="svc-tag">Citas</div>
+      </div>
+      <div class="svc-card" data-s="mechanic">
+        <div class="svc-emoji">🔧</div>
+        <div class="svc-label">Mecánico</div>
+        <div class="svc-tag">Citas</div>
+      </div>
+      <div class="svc-card" data-s="restaurant">
+        <div class="svc-emoji">🍽️</div>
+        <div class="svc-label">Restaurante</div>
+        <div class="svc-tag">Pedidos</div>
+      </div>
+      <div class="svc-card" data-s="nails">
+        <div class="svc-emoji">💅</div>
+        <div class="svc-label">Manicurista</div>
+        <div class="svc-tag">Citas</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ADMIN
+══════════════════════════════════════════ -->
+<div id="page-admin" class="page">
+  <header class="admin-header">
+    <button class="btn btn-outline btn-sm" onclick="showPage('home')">← Volver</button>
+    <div class="brand" style="font-size:16px;"><div class="brand-dot"></div>ServiceBot</div>
+    <div class="svc-badge" id="admin-badge"></div>
+  </header>
+
+  <div class="admin-layout">
+    <!-- FORM -->
+    <div class="admin-form-col">
+      <p class="label" style="margin-bottom:18px;">Configura tu negocio</p>
+
+      <div class="logo-row">
+        <div class="logo-upload" id="logo-upload">
+          <span id="logo-ph">🏪</span>
+          <img id="logo-img" style="display:none;" />
+          <input type="file" accept="image/*" id="logo-input" />
+        </div>
+        <div>
+          <div style="font-family:'Clash Display',sans-serif;font-weight:600;font-size:14px;">Logo del negocio</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:3px;">Toca para subir tu logo</div>
+        </div>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Nombre del negocio</label>
+        <input class="input" id="biz-name" placeholder="Ej: Barbería El Clásico" oninput="livePreview()" />
+      </div>
+      <div class="input-group">
+        <label class="input-label">Descripción</label>
+        <textarea class="textarea" id="biz-desc" placeholder="Los mejores cortes del barrio." oninput="livePreview()"></textarea>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Tu número de WhatsApp</label>
+        <input class="input" id="biz-wa" placeholder="+57 300 000 0000" type="tel" />
+        <div style="font-size:11px;color:var(--muted);margin-top:5px;">📲 Aquí recibirás las reservas y pedidos</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <p class="label" id="opts-label" style="margin-bottom:6px;">Opciones del menú</p>
+      <p style="font-size:13px;color:var(--muted2);margin-bottom:18px;" id="opts-sub"></p>
+
+      <div id="opts-list"></div>
+      <button class="btn-add-opt" onclick="addOpt()">＋ Agregar opción</button>
+
+      <div class="divider"></div>
+      <button class="btn btn-accent" style="width:100%;font-size:15px;padding:16px;" onclick="generateBot()">🔗 Generar bot</button>
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="admin-preview-col">
+      <p class="label">Vista previa del cliente</p>
+
+      <div class="phone-mockup">
+        <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+        <div class="phone-screen">
+          <div class="phone-logo-row">
+            <div class="phone-logo-circle" id="prev-logo-circle">
+              <span id="prev-logo-ph">🏪</span>
+              <img id="prev-logo-img" style="display:none;" />
+            </div>
+            <div>
+              <div class="phone-biz-name" id="prev-name">Tu negocio</div>
+            </div>
+          </div>
+          <div class="phone-biz-desc" id="prev-desc">Descripción del servicio</div>
+          <div id="prev-opts"></div>
+        </div>
+      </div>
+
+      <div class="link-box" id="link-box" style="display:none;">
+        <div class="link-box-label">🔗 Link del bot</div>
+        <div class="link-row">
+          <input class="link-value" id="link-val" readonly />
+          <button class="btn btn-ghost btn-sm" onclick="copyLink()">Copiar</button>
+        </div>
+        <button class="btn btn-accent" style="width:100%;margin-top:12px;" onclick="goClient()">
+          👁 Ver como cliente →
+        </button>
+        <button class="btn btn-outline" style="width:100%;margin-top:8px;" onclick="showAdminAppts()">
+          📋 Ver citas reservadas
+        </button>
+        <button class="btn btn-outline" style="width:100%;margin-top:8px;border-color:var(--accent)60;color:var(--accent);" onclick="showSubPanel()">
+          💳 Gestionar suscripción
+        </button>
+      </div>
+    </div>
+
+    <!-- PANEL DE CITAS ADMIN -->
+    <div id="admin-appts-panel" style="display:none;margin-top:16px;">
+      <div class="section-card">
+        <div class="section-header">
+          <div class="section-title">📋 Citas reservadas</div>
+          <button class="btn btn-ghost btn-sm" onclick="loadAdminAppts()">🔄 Actualizar</button>
+        </div>
+        <div id="admin-appts-list" style="margin-top:12px;"></div>
+      </div>
+    </div>
+    <!-- PANEL DE SUSCRIPCIÓN (solo visible para ti, el dueño de ServiceBot) -->
+    <div id="admin-sub-panel" style="display:none;margin-top:16px;">
+      <div class="section-card" style="border:2px solid var(--accent)40;">
+        <div class="section-header">
+          <div class="section-title">💳 Suscripción del negocio</div>
+        </div>
+        <div style="margin-top:12px;font-size:13px;color:var(--muted2);" id="sub-status-text">Cargando...</div>
+        <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;">
+          <button class="btn btn-accent" onclick="renewSub(30)">✅ Renovar 30 días</button>
+          <button class="btn btn-outline" onclick="renewSub(7)">🔄 Renovar 7 días (prueba)</button>
+          <button class="btn" style="background:#3a0e0e;color:#e84a4a;border:1px solid #e84a4a40;" onclick="suspendBot()">⏸️ Suspender bot</button>
+        </div>
+        <div style="margin-top:12px;font-size:11px;color:var(--muted);text-align:center;">Panel exclusivo del administrador de ServiceBot</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CLIENT
+══════════════════════════════════════════ -->
+<div id="page-client" class="page">
+  <header class="client-topbar">
+    <div class="brand" style="font-size:15px;"><div class="brand-dot"></div>ServiceBot</div>
+    <button class="btn btn-outline btn-sm" onclick="showPage('admin')">← Admin</button>
+  </header>
+
+  <section class="client-hero-section">
+    <div class="client-logo" id="client-logo">
+      <span id="client-logo-ph"></span>
+      <img id="client-logo-img" style="display:none;" />
+    </div>
+    <h2 class="client-biz-title display" id="client-biz-name"></h2>
+    <p class="client-biz-sub" id="client-biz-desc"></p>
+  </section>
+
+  <div class="opts-grid" id="client-opts-grid"></div>
+
+  <!-- RESTAURANT FLOW -->
+  <div class="flow-section" id="flow-restaurant" style="display:none;">
+    <h3 class="flow-title">🍽️ Tu pedido</h3>
+    <p class="flow-sub">Selecciona tu mesa y enviamos el pedido a cocina.</p>
+    <div class="sel-badge" id="rest-badge" style="display:none;">
+      <span class="sel-badge-name" id="rest-badge-name"></span>
+      <span class="sel-badge-price" id="rest-badge-price"></span>
+    </div>
+    <div class="table-wrap">
+      <div class="table-title">¿En qué mesa estás?</div>
+      <div class="table-grid" id="table-grid"></div>
+    </div>
+    <div class="send-row">
+      <button class="btn btn-wa" onclick="sendOrder()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Enviar pedido por WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- APPOINTMENT FLOW -->
+  <div class="flow-section" id="flow-appt" style="display:none;">
+    <h3 class="flow-title" id="appt-title"></h3>
+    <p class="flow-sub" id="appt-sub"></p>
+    <div class="sel-badge" id="appt-badge" style="display:none;">
+      <span class="sel-badge-name" id="appt-badge-name"></span>
+      <span class="sel-badge-price" id="appt-badge-price"></span>
+    </div>
+
+    <!-- Calendar -->
+    <div id="appt-calendar" style="margin:0 24px 16px;"></div>
+    <div id="appt-times" style="display:flex;flex-wrap:wrap;gap:8px;padding:0 24px 16px;"></div>
+    <div class="cal-wrap">
+      <div class="cal-head">
+        <button class="cal-btn" onclick="calPrev()">‹</button>
+        <div class="cal-month-lbl display" id="cal-lbl"></div>
+        <button class="cal-btn" onclick="calNext()">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--accent);"></div>Seleccionado</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:#3a0e0e;border:1px solid var(--warn)40;"></div>Ocupado</div>
+        <div class="cal-legend-item"><div class="cal-legend-dot" style="background:var(--ink3);border:1px solid var(--border2);"></div>Disponible</div>
+      </div>
+    </div>
+
+    <!-- Slots -->
+    <div class="slots-wrap" id="slots-wrap" style="display:none;">
+      <div class="slots-title display" id="slots-lbl"></div>
+      <div class="slots-grid" id="slots-grid"></div>
+    </div>
+
+    <!-- Form -->
+    <div class="client-form" id="appt-form" style="display:none;">
+      <div class="input-group" style="margin-bottom:0;">
+        <label class="input-label">Tu nombre</label>
+        <input class="input" id="appt-name" placeholder="Nombre completo" />
+      </div>
+      <div class="input-group" style="margin-bottom:0;">
+        <label class="input-label">Tu celular</label>
+        <input class="input" id="appt-phone" placeholder="+57 300 000 0000" />
+      </div>
+      <div class="input-group" style="grid-column:1/-1;margin-bottom:0;">
+        <label class="input-label">Nota (opcional)</label>
+        <textarea class="textarea" id="appt-note" placeholder="Algo que deba saber..." style="min-height:60px;"></textarea>
+      </div>
+    </div>
+
+    <div class="send-row" id="appt-send-row" style="display:none;">
+      <button class="btn btn-wa" onclick="sendAppt()">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        Confirmar reserva por WhatsApp
+      </button>
+    </div>
+
+    <!-- PAGO ANTICIPADO -->
+    <div id="flow-payment" style="display:none;padding:0 24px 16px;">
+      <div style="background:var(--ink2);border:1px solid var(--border2);border-radius:16px;padding:20px;text-align:center;">
+        <div id="pay-method-title" style="font-weight:700;font-size:16px;margin-bottom:4px;"></div>
+        <div id="pay-number-show" style="color:var(--muted2);font-size:14px;margin-bottom:14px;"></div>
+        <img id="pay-qr-img" style="max-width:200px;width:100%;border-radius:12px;display:none;margin:0 auto 14px;" />
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button class="btn btn-accent" onclick="confirmPayNow()">✅ Ya pagué — Confirmar cita</button>
+          <button class="btn btn-outline" onclick="confirmPayLater()">⏩ Pagar en el negocio</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANCELAR CITA -->
+    <div class="flow-section" id="flow-cancel" style="margin-top:8px;">
+      <h3 class="flow-title" style="font-size:16px;">❌ ¿Quieres cancelar una cita?</h3>
+      <p class="flow-sub" style="font-size:13px;">Ingresa el número de celular con el que reservaste.</p>
+      <div style="display:flex;gap:8px;padding:0 24px 8px;">
+        <input class="input" id="cancel-phone" placeholder="+57 300 000 0000" style="flex:1;" />
+        <button class="btn btn-outline" onclick="searchApptToCancel()" style="white-space:nowrap;">Buscar</button>
+      </div>
+      <div id="cancel-results" style="padding:0 24px 16px;"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     CONFIRMATION
+══════════════════════════════════════════ -->
+<div id="page-confirm" class="page">
+  <div class="confirm-card">
+    <div class="confirm-anim" id="conf-icon">📱</div>
+    <h2 class="confirm-title display" id="conf-title">¡Enviado!</h2>
+    <p class="confirm-sub" id="conf-sub">El negocio recibió tu solicitud por WhatsApp.</p>
+    <div class="confirm-details" id="conf-details"></div>
+    <div class="confirm-btns" id="conf-btns"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ERROR PAGE -->
+<div id="page-error" class="page" style="align-items:center;justify-content:center;background:var(--ink);">
+  <div style="text-align:center;padding:40px 28px;max-width:400px;">
+    <div style="font-size:64px;margin-bottom:20px;">🔗</div>
+    <h2 style="font-family:'Clash Display',sans-serif;font-size:26px;font-weight:700;letter-spacing:-1px;margin-bottom:12px;">Link no encontrado</h2>
+    <p style="color:var(--muted2);font-size:15px;line-height:1.6;margin-bottom:28px;">Este link no existe o venció.<br>Pídele al negocio que genere uno nuevo.</p>
+    <button class="btn btn-accent" style="width:100%;" onclick="showPage('home')">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════ -->
+<script>
+// ═══ CONFIG ══════════════════════════════════
+const SVCS = {
+  barber:     {emoji:'✂️', name:'Barbería', type:'appt',    color:'#e84a4a', apptTitle:'✂️ Reservar cita',      apptSub:'Elige tu corte, fecha y hora disponible.',         optLabel:'Cortes disponibles',   optSub:'Agrega los cortes con imagen y precio.',         ph:['Corte clásico','Fade + barba','Corte infantil'],  pr:['$15.000','$25.000','$12.000'], em:['💈','🔥','👶']},
+  dental:     {emoji:'🦷', name:'Odontología', type:'appt', color:'#4a9de8', apptTitle:'🦷 Agendar consulta',   apptSub:'Elige el tratamiento, fecha y hora disponible.',    optLabel:'Tratamientos',         optSub:'Agrega los tratamientos con imagen y precio.',   ph:['Limpieza dental','Blanqueamiento','Extracción'],  pr:['$80.000','$250.000','$120.000'],em:['🧼','✨','😬']},
+  mechanic:   {emoji:'🔧', name:'Mecánico', type:'appt',    color:'#4ae87a', apptTitle:'🔧 Solicitar servicio', apptSub:'Elige el servicio, fecha y hora disponible.',       optLabel:'Servicios',            optSub:'Agrega los servicios con imagen y precio.',      ph:['Cambio de aceite','Alineación','Revisión general'],pr:['$45.000','$70.000','$35.000'], em:['🛢️','⚖️','🔍']},
+  restaurant: {emoji:'🍽️', name:'Restaurante', type:'restaurant', color:'#e8a44a', apptTitle:'',                     apptSub:'',                                                  optLabel:'Platos del menú',      optSub:'Agrega los platos con foto y precio.',           ph:['Bandeja paisa','Ajiaco','Sancocho'],              pr:['$22.000','$18.000','$20.000'], em:['🫘','🍲','🍗']},
+  nails:      {emoji:'💅', name:'Manicurista', type:'appt', color:'#b44ae8', apptTitle:'💅 Reservar cita',      apptSub:'Elige tu diseño, fecha y hora disponible.',         optLabel:'Servicios de uñas',    optSub:'Agrega los diseños con imagen y precio.',        ph:['Semipermanente','Acrílicas','Nail art'],          pr:['$35.000','$80.000','$55.000'], em:['💜','🪄','🌸']},
+};
+const TIMES = ['8:00 am','9:00 am','10:00 am','11:00 am','12:00 pm','2:00 pm','3:00 pm','4:00 pm','5:00 pm','6:00 pm'];
+const MONTHS = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DAYS   = ['Do','Lu','Ma','Mi','Ju','Vi','Sá'];
+
+// ═══ STATE ═══════════════════════════════════
+let curSvc='barber', opts=[], logoUrl=null, bizData={};
+let bookedDates={}, calY, calM;
+let selOpt=null, selDate=null, selTime=null, selTable=null;
+
+// ═══ NAVIGATION ══════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function scrollToServices(){
+  document.getElementById('services-anchor').scrollIntoView({behavior:'smooth'});
+}
+
+// ═══ SERVICE CARDS ════════════════════════════
+document.getElementById('services-grid')?.addEventListener('click',e=>{
+  const c=e.target.closest('.svc-card');
+  if(c) openAdmin(c.dataset.s);
+});
+
+// ═══ OPEN ADMIN ══════════════════════════════
+function openAdmin(svc){
+  curSvc=svc;
+  const s=SVCS[svc];
+  // badge
+  const b=document.getElementById('admin-badge');
+  b.textContent=s.emoji+' '+s.name;
+  b.style.cssText=`background:${s.color}18;border:1px solid ${s.color}40;color:${s.color};padding:5px 14px;border-radius:99px;font-size:12px;font-weight:700;`;
+  // defaults
+  document.getElementById('opts-label').textContent='✦ '+s.optLabel;
+  document.getElementById('opts-sub').textContent=s.optSub;
+  document.getElementById('biz-name').value=s.name+' Ejemplo';
+  document.getElementById('biz-desc').value='El mejor servicio de '+s.name.toLowerCase()+' de la ciudad.';
+  document.getElementById('biz-wa').value='+57 300 000 0000';
+  // logo reset
+  logoUrl=null;
+  document.getElementById('logo-img').style.display='none';
+  document.getElementById('logo-ph').style.display='';
+  // options
+  opts=s.ph.map((name,i)=>({name,price:s.pr[i],desc:'',img:s.em[i],imgData:null}));
+  renderOpts();
+  livePreview();
+  document.getElementById('link-box').style.display='none';
+  showPage('admin');
+  saveAdminState();
+}
+
+// ═══ LOGO UPLOAD ══════════════════════════════
+document.getElementById('logo-input')?.addEventListener('change',function(){
+  const f=this.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    logoUrl=ev.target.result;
+    const img=document.getElementById('logo-img');
+    img.src=logoUrl; img.style.display='block';
+    document.getElementById('logo-ph').style.display='none';
+    livePreview();
+  };
+  r.readAsDataURL(f);
+});
+
+// QR upload handler
+let qrUrl = null;
+document.getElementById('qr-input')?.addEventListener('change',function(){
+  const f=this.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    qrUrl=ev.target.result;
+    const img=document.getElementById('qr-img');
+    img.src=qrUrl; img.style.display='block';
+    document.getElementById('qr-ph').style.display='none';
+    document.getElementById('qr-upload-box').querySelector('span:last-of-type').style.display='none';
+  };
+  r.readAsDataURL(f);
+});
+
+// ═══ RENDER OPTIONS (admin) ═══════════════════
+function renderOpts(){
+  const list=document.getElementById('opts-list');
+  list.innerHTML='';
+  opts.forEach((o,i)=>{
+    const div=document.createElement('div');
+    div.className='opt-item';
+    const imgC=o.imgData?`<img src="${o.imgData}" style="width:100%;height:100%;object-fit:cover;"/>`:`<span>${o.img}</span>`;
+    div.innerHTML=`
+      <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:10px;">
+        <div>
+          <div class="opt-img-upload" title="Subir imagen">${imgC}<input type="file" accept="image/*"/></div>
+          <div style="font-size:9px;color:var(--muted);text-align:center;margin-top:3px;">📷 foto</div>
+        </div>
+        <div style="flex:1;">
+          <input class="input" placeholder="Nombre" value="${h(o.name)}" oninput="opts[${i}].name=this.value;livePreview()" style="margin-bottom:8px;"/>
+          <div style="display:flex;gap:8px;">
+            <input class="input" placeholder="Precio ej: $25.000" value="${h(o.price)}" oninput="opts[${i}].price=this.value;livePreview()" style="flex:1;"/>
+            <button class="btn btn-outline btn-icon" onclick="removeOpt(${i})" style="color:#e84a4a;border-color:#e84a4a30;flex-shrink:0;">✕</button>
+          </div>
+        </div>
+      </div>
+      <input class="input" placeholder="Descripción corta (opcional)" value="${h(o.desc)}" oninput="opts[${i}].desc=this.value"/>
+    `;
+    div.querySelector('input[type=file]').addEventListener('change',function(){
+      const f=this.files[0]; if(!f) return;
+      const r=new FileReader();
+      r.onload=ev=>{opts[i].imgData=ev.target.result; renderOpts();};
+      r.readAsDataURL(f);
+    });
+    list.appendChild(div);
+  });
+  livePreview();
+}
+function h(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');}
+function removeOpt(i){opts.splice(i,1);renderOpts();}
+function addOpt(){const s=SVCS[curSvc];opts.push({name:'Nueva opción',price:'$0',desc:'',img:s.em[0],imgData:null});renderOpts();}
+
+// ═══ LIVE PREVIEW ═════════════════════════════
+function livePreview(){
+  const name=document.getElementById('biz-name').value||'Tu negocio';
+  const desc=document.getElementById('biz-desc').value||'Descripción';
+  // logo
+  const plc=document.getElementById('prev-logo-circle');
+  if(logoUrl){
+    document.getElementById('prev-logo-img').src=logoUrl;
+    document.getElementById('prev-logo-img').style.display='block';
+    document.getElementById('prev-logo-ph').style.display='none';
+  } else {
+    document.getElementById('prev-logo-img').style.display='none';
+    document.getElementById('prev-logo-ph').style.display='';
+  }
+  document.getElementById('prev-name').textContent=name;
+  document.getElementById('prev-desc').textContent=desc;
+  const po=document.getElementById('prev-opts');
+  po.innerHTML='';
+  opts.slice(0,3).forEach(o=>{
+    const th=o.imgData?`<img src="${o.imgData}"/>`:`<span>${o.img}</span>`;
+    po.innerHTML+=`<div class="phone-opt-row"><div class="phone-opt-thumb">${th}</div><div><div class="phone-opt-name">${h(o.name)}</div><div class="phone-opt-price">${h(o.price)}</div></div></div>`;
+  });
+}
+
+// ═══════════════════════════════════════════
+// SOLUCIÓN DEFINITIVA — Sin backend, sin Firebase
+// Los datos viajan EN el link comprimidos con LZString
+// Funciona en CUALQUIER celular del mundo ✅
+// ═══════════════════════════════════════════
+
+// LZString — compresión para URLs
+var LZString=(function(){var f=String.fromCharCode,keyStrBase64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",keyStrUriSafe="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$",baseReverseDic={};function getBaseValue(alphabet,character){if(!baseReverseDic[alphabet]){baseReverseDic[alphabet]={};for(var i=0;i<alphabet.length;i++){baseReverseDic[alphabet][alphabet.charAt(i)]=i}}return baseReverseDic[alphabet][character]}var LZString={compressToBase64:function(input){if(input==null)return"";var res=LZString._compress(input,6,function(a){return keyStrBase64.charAt(a)});switch(res.length%4){default:case 0:return res;case 1:return res+"===";case 2:return res+"==";case 3:return res+"="}},decompressFromBase64:function(input){if(input==null)return"";if(input=="")return null;return LZString._decompress(input.length,32,function(index){return getBaseValue(keyStrBase64,input.charAt(index))})},compressToEncodedURIComponent:function(input){if(input==null)return"";return LZString._compress(input,6,function(a){return keyStrUriSafe.charAt(a)})},decompressFromEncodedURIComponent:function(input){if(input==null)return"";if(input=="")return null;input=input.replace(/ /g,"+");return LZString._decompress(input.length,32,function(index){return getBaseValue(keyStrUriSafe,input.charAt(index))})},_compress:function(uncompressed,bitsPerChar,getCharFromInt){if(uncompressed==null)return"";var i,value,context_dictionary={},context_dictionaryToCreate={},context_c="",context_wc="",context_w="",context_enlargeIn=2,context_dictSize=3,context_numBits=2,context_data=[],context_data_val=0,context_data_position=0,ii;for(ii=0;ii<uncompressed.length;ii+=1){context_c=uncompressed.charAt(ii);if(!Object.prototype.hasOwnProperty.call(context_dictionary,context_c)){context_dictionary[context_c]=context_dictSize++;context_dictionaryToCreate[context_c]=true}context_wc=context_w+context_c;if(Object.prototype.hasOwnProperty.call(context_dictionary,context_wc)){context_w=context_wc}else{if(Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)){if(context_w.charCodeAt(0)<256){for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}}value=context_w.charCodeAt(0);for(i=0;i<8;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}else{value=1;for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1)|value;if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=0}value=context_w.charCodeAt(0);for(i=0;i<16;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}context_enlargeIn--;if(context_enlargeIn==0){context_enlargeIn=Math.pow(2,context_numBits);context_numBits++}delete context_dictionaryToCreate[context_w]}else{value=context_dictionary[context_w];for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}context_enlargeIn--;if(context_enlargeIn==0){context_enlargeIn=Math.pow(2,context_numBits);context_numBits++}context_dictionary[context_wc]=context_dictSize++;context_w=String(context_c)}}if(context_w!==""){if(Object.prototype.hasOwnProperty.call(context_dictionaryToCreate,context_w)){if(context_w.charCodeAt(0)<256){for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}}value=context_w.charCodeAt(0);for(i=0;i<8;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}else{value=1;for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1)|value;if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=0}value=context_w.charCodeAt(0);for(i=0;i<16;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}context_enlargeIn--;if(context_enlargeIn==0){context_enlargeIn=Math.pow(2,context_numBits);context_numBits++}delete context_dictionaryToCreate[context_w]}else{value=context_dictionary[context_w];for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1)|(value&1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}value=value>>1}}context_enlargeIn--;if(context_enlargeIn==0){context_enlargeIn=Math.pow(2,context_numBits);context_numBits++}}for(i=0;i<context_numBits;i++){context_data_val=(context_data_val<<1);if(context_data_position==bitsPerChar-1){context_data_position=0;context_data.push(getCharFromInt(context_data_val));context_data_val=0}else{context_data_position++}}context_data.push(getCharFromInt(context_data_val<<(bitsPerChar-context_data_position-1)));return context_data.join("")},_decompress:function(length,resetValue,getNextValue){var dictionary=[],next,enlargeIn=4,dictSize=4,numBits=3,entry="",result=[],i,w,bits,resb,maxpower,power,c,data={val:getNextValue(0),position:resetValue,index:1};for(i=0;i<3;i+=1){dictionary[i]=i}bits=0;maxpower=Math.pow(2,2);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}switch(next=bits){case 0:bits=0;maxpower=Math.pow(2,8);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}c=f(bits);break;case 1:bits=0;maxpower=Math.pow(2,16);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}c=f(bits);break;case 2:return""}w=c;dictionary[3]=c;result.push(c);while(true){if(data.index>length){return""}bits=0;maxpower=Math.pow(2,numBits);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}switch(c=bits){case 0:bits=0;maxpower=Math.pow(2,8);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}dictionary[dictSize++]=f(bits);c=dictSize-1;enlargeIn--;break;case 1:bits=0;maxpower=Math.pow(2,16);power=1;while(power!=maxpower){resb=data.val&data.position;data.position>>=1;if(data.position==0){data.position=resetValue;data.val=getNextValue(data.index++)}bits|=(resb>0?1:0)*power;power<<=1}dictionary[dictSize++]=f(bits);c=dictSize-1;enlargeIn--;break;case 2:return result.join("")}if(enlargeIn==0){enlargeIn=Math.pow(2,numBits);numBits++}if(dictionary[c]){entry=dictionary[c]}else{if(c===dictSize){entry=w+w.charAt(0)}else{return null}}result.push(entry);dictionary[dictSize++]=w+entry.charAt(0);enlargeIn--;if(enlargeIn==0){enlargeIn=Math.pow(2,numBits);numBits++}w=entry}return result.join("")}};return LZString})();
+
+// ═══ API CONFIG ══════════════════════════════
+const API = 'https://servicebot-nhwz.onrender.com/api';
+// Firebase para reservas permanentes (no se pierden aunque Render se apague)
+const FB = 'https://servicios-3dd25-default-rtdb.firebaseio.com';
+
+async function fbSet(path, data){
+  try{
+    await fetch(`${FB}/${path}.json`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+  }catch(e){}
+}
+async function fbGet(path){
+  try{
+    const r = await fetch(`${FB}/${path}.json`,{cache:'no-store'});
+    if(r.ok){ const d=await r.json(); return d; }
+  }catch(e){}
+  return null;
+}
+
+// ═══ GENERATE BOT ════════════════════════════
+async function generateBot(){
+  const btn=document.querySelector('[onclick="generateBot()"]');
+  if(btn){btn.textContent='⏳ Procesando...';btn.disabled=true;}
+
+  // Comprimir imágenes
+  const compLogo = logoUrl ? await compressImg(logoUrl,300,0.72) : null;
+  const compOpts = await Promise.all(opts.map(async o=>({
+    ...o, imgData: o.imgData ? await compressImg(o.imgData,400,0.70) : null
+  })));
+
+  bizData={
+    svc:curSvc,
+    name:document.getElementById('biz-name').value||SVCS[curSvc].name,
+    desc:document.getElementById('biz-desc').value,
+    wa:document.getElementById('biz-wa').value.replace(/\D/g,''),
+    logo:compLogo,
+    opts:compOpts,
+  };
+
+  const botId='sb_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,5);
+  bizData._botId=botId;
+
+  // Guardar con imágenes en localStorage
+  try{localStorage.setItem(botId,JSON.stringify(bizData));}catch(e){}
+
+  if(btn){btn.textContent='🔗 Generar bot';btn.disabled=false;}
+
+  const base = window.location.href.split('?')[0];
+  let fullLink;
+
+  try{
+    const res = await fetch(API+'/bot', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({id:botId, data:bizData})
+    });
+    if(res.ok){
+      fullLink = base+'?id='+botId;
+      toast('✅ ¡Listo! Link con imágenes funciona en cualquier celular.');
+    } else { throw new Error('server'); }
+  }catch(e){
+    // Fallback sin imágenes
+    const textData={svc:bizData.svc,name:bizData.name,desc:bizData.desc,wa:bizData.wa,logo:null,
+      opts:bizData.opts.map(o=>({name:o.name,price:o.price,desc:o.desc,img:o.img,imgData:null})),_botId:botId};
+    fullLink=base+'?v='+LZString.compressToEncodedURIComponent(JSON.stringify(textData));
+    toast('⚠️ Servidor no disponible. Link sin imágenes.');
+  }
+
+  document.getElementById('link-val').value=fullLink;
+  document.getElementById('link-box').style.display='';
+  document.getElementById('link-box').scrollIntoView({behavior:'smooth',block:'nearest'});
+  saveAdminState();
+}
+
+async function compressImg(dataUrl,maxW,quality){
+  if(!dataUrl) return null;
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const scale=Math.min(1,maxW/Math.max(img.width,1));
+      const w=Math.round(img.width*scale),hh=Math.round(img.height*scale);
+      const c=document.createElement('canvas');
+      c.width=w;c.height=hh;
+      c.getContext('2d').drawImage(img,0,0,w,hh);
+      resolve(c.toDataURL('image/jpeg',quality));
+    };
+    img.onerror=()=>resolve(dataUrl);
+    img.src=dataUrl;
+  });
+}
+
+// ═══ SUBSCRIPTION ════════════════════════════
+const OWNER_WA = '573157616126'; // Tu número de WhatsApp
+
+async function showSubPanel(){
+  const panel = document.getElementById('admin-sub-panel');
+  const isHidden = panel.style.display==='none';
+  panel.style.display = isHidden ? '' : 'none';
+  if(isHidden) loadSubStatus();
+}
+
+async function loadSubStatus(){
+  const botId = bizData && bizData._botId;
+  if(!botId){ document.getElementById('sub-status-text').textContent='Genera el bot primero.'; return; }
+  const sub = await fbGet('subs/'+botId);
+  const txt = document.getElementById('sub-status-text');
+  if(!sub || !sub.expiry){
+    txt.innerHTML = '⚠️ Sin suscripción activa. El bot está <b style="color:#e84a4a">suspendido</b>.';
+  } else {
+    const exp = new Date(sub.expiry);
+    const now = new Date();
+    const days = Math.ceil((exp-now)/(1000*60*60*24));
+    if(days < 0){
+      txt.innerHTML = `❌ Vencida hace ${Math.abs(days)} días. Bot <b style="color:#e84a4a">suspendido</b>.`;
+    } else if(days <= 5){
+      txt.innerHTML = `⚠️ Vence en <b style="color:#e8a44a">${days} días</b> (${exp.toLocaleDateString('es-CO')})`;
+    } else {
+      txt.innerHTML = `✅ Activa hasta <b style="color:var(--accent)">${exp.toLocaleDateString('es-CO')}</b> (${days} días restantes)`;
+    }
+  }
+}
+
+async function renewSub(days){
+  const botId = bizData && bizData._botId;
+  if(!botId){toast('⚠️ Genera el bot primero');return;}
+  const sub = await fbGet('subs/'+botId);
+  const base = (sub && sub.expiry && new Date(sub.expiry) > new Date()) ? new Date(sub.expiry) : new Date();
+  base.setDate(base.getDate()+days);
+  await fbSet('subs/'+botId, {expiry: base.toISOString(), botId, bizName: bizData.name||'', renewed: new Date().toISOString()});
+  toast(`✅ Renovado hasta ${base.toLocaleDateString('es-CO')}`);
+  loadSubStatus();
+  // Send yourself a WhatsApp reminder about this renewal
+  if(OWNER_WA){
+    const msg = `💳 *RENOVACIÓN ServiceBot*\n─────────\nNegocio: *${bizData.name||botId}*\nPlan: ${days} días\nVence: ${base.toLocaleDateString('es-CO')}\n─────────\nRecuerda cobrar la mensualidad 💰`;
+    openWA(OWNER_WA, msg);
+  }
+}
+
+async function suspendBot(){
+  const botId = bizData && bizData._botId;
+  if(!botId) return;
+  if(!confirm('¿Suspender este bot? Los clientes verán la pantalla de servicio pausado.')) return;
+  // Set expiry to yesterday
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+  await fbSet('subs/'+botId, {expiry: yesterday.toISOString(), botId, bizName: bizData.name||''});
+  toast('⏸️ Bot suspendido');
+  loadSubStatus();
+}
+
+// Check and warn if subscription expires in 3 days (for admin)
+async function checkSubWarning(){
+  const botId = bizData && bizData._botId;
+  if(!botId) return;
+  try{
+    const sub = await fbGet('subs/'+botId);
+    if(!sub || !sub.expiry) return;
+    const days = Math.ceil((new Date(sub.expiry)-new Date())/(1000*60*60*24));
+    if(days <= 3 && days >= 0){
+      toast(`⚠️ Suscripción vence en ${days} días. Renueva para no perder el servicio.`);
+    }
+  }catch(e){}
+}
+
+function showAdminAppts(){
+  const panel = document.getElementById('admin-appts-panel');
+  const isHidden = panel.style.display === 'none';
+  panel.style.display = isHidden ? '' : 'none';
+  if(isHidden) loadAdminAppts();
+}
+
+async function loadAdminAppts(){
+  const list = document.getElementById('admin-appts-list');
+  list.innerHTML = '<p style="color:var(--muted2);font-size:13px;">Cargando...</p>';
+  
+  // Load from Firebase
+  let bk = {};
+  const saved = saveAdminState && typeof saveAdminState === 'function' ? null : null;
+  const botId = bizData && bizData._botId;
+  if(botId){
+    try{
+      bk = await fbGet('bookings/'+botId) || {};
+      bookedDates = bk;
+    }catch(e){ bk = bookedDates; }
+  }
+
+  const allAppts = [];
+  Object.entries(bk).forEach(([date, appts])=>{
+    (appts||[]).forEach((appt,idx)=>{
+      if(appt && appt.time){
+        const [y,m,d] = date.split('-');
+        allAppts.push({date, dateStr:`${parseInt(d)} de ${MONTHS[parseInt(m)-1]} ${y}`, idx, appt});
+      }
+    });
+  });
+
+  allAppts.sort((a,b)=>a.date.localeCompare(b.date));
+
+  if(!allAppts.length){
+    list.innerHTML = '<p style="color:var(--muted2);font-size:13px;text-align:center;padding:16px 0;">Sin citas reservadas aún.</p>';
+    return;
+  }
+
+  list.innerHTML = allAppts.map(({date,dateStr,idx,appt})=>`
+    <div class="appt-card">
+      <div class="appt-card-header">
+        <span class="appt-card-name">👤 ${h(appt.name||'')}</span>
+        <span class="appt-card-time">⏰ ${appt.time}</span>
+      </div>
+      <div class="appt-card-detail">✂️ ${h(appt.service||'')} · 💰 ${h(appt.price||'')}</div>
+      <div class="appt-card-detail">📆 ${dateStr} · 📱 ${h(appt.phone||'')}</div>
+      ${appt.note?`<div class="appt-card-detail">📝 ${h(appt.note)}</div>`:''}
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <button class="btn-cancel-appt" onclick="adminCancelAppt('${date}',${idx})">❌ Cancelar</button>
+        <button class="btn btn-ghost btn-sm" onclick="openWA('${(appt.phone||'').replace(/\D/g,'')}','Hola ${appt.name}, te contactamos desde ${bizData.name||'el negocio'} sobre tu cita del ${dateStr} a las ${appt.time}.')">💬 WhatsApp</button>
+      </div>
+    </div>`).join('');
+}
+
+async function adminCancelAppt(date, idx){
+  if(!confirm('¿Cancelar esta cita?')) return;
+  if(!bookedDates[date]) return;
+  const appt = bookedDates[date][idx];
+  bookedDates[date].splice(idx,1);
+  if(bookedDates[date].length===0) delete bookedDates[date];
+  if(bizData._botId){
+    try{localStorage.setItem(bizData._botId+'_bk',JSON.stringify(bookedDates));}catch(e){}
+    await fbSet('bookings/'+bizData._botId, bookedDates);
+  }
+  toast('✅ Cita cancelada');
+  loadAdminAppts();
+}
+
+function copyLink(){navigator.clipboard.writeText(document.getElementById('link-val').value).catch(()=>{});toast('📋 Link copiado');}
+
+function buildClient(){
+  if(!bizData||!bizData.svc) return;
+  const svc = SVCS[bizData.svc];
+
+  // Logo
+  const logoImg = document.getElementById('client-logo-img');
+  const logoPh  = document.getElementById('client-logo-ph');
+  if(bizData.logo){
+    logoImg.src = bizData.logo;
+    logoImg.style.display = 'block';
+    logoPh.style.display  = 'none';
+  } else {
+    logoImg.style.display = 'none';
+    logoPh.style.display  = '';
+    logoPh.textContent    = svc.emoji;
+  }
+
+  // Name & desc
+  document.getElementById('client-biz-name').textContent = bizData.name || svc.name;
+  document.getElementById('client-biz-desc').textContent = bizData.desc || '';
+
+  // Options grid
+  const grid = document.getElementById('client-opts-grid');
+  grid.innerHTML = '';
+  (bizData.opts||[]).forEach((o,i) => {
+    const card = document.createElement('div');
+    card.className = 'opt-card';
+    card.innerHTML = `
+      ${o.imgData ? `<img src="${o.imgData}" style="width:100%;height:140px;object-fit:cover;border-radius:12px 12px 0 0;">` :
+        `<div style="font-size:40px;text-align:center;padding:20px 0;">${o.img||'⭐'}</div>`}
+      <div style="padding:14px;">
+        <div style="font-weight:700;font-size:15px;">${h(o.name||'')}</div>
+        <div style="color:var(--accent);font-weight:700;font-size:14px;margin-top:4px;">${h(o.price||'')}</div>
+        ${o.desc?`<div style="color:var(--muted2);font-size:13px;margin-top:4px;">${h(o.desc)}</div>`:''}
+      </div>`;
+    card.onclick = () => selectOpt(o, card, svc.type);
+    grid.appendChild(card);
+  });
+
+  // Reset flows
+  selOpt=null; selDate=null; selTime=null; selTable=null;
+  document.getElementById('flow-restaurant').style.display='none';
+  document.getElementById('flow-appt').style.display='none';
+}
+
+function buildCalendar(){
+  const cal = document.getElementById('appt-calendar');
+  if(!cal) return;
+  const now = new Date();
+  let month = now.getMonth(), year = now.getFullYear();
+  const MONTHS_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  
+  function render(){
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    let html = `<div class="cal-header">
+      <button class="cal-nav" onclick="window._calPrev()">‹</button>
+      <span>${MONTHS_ES[month]} ${year}</span>
+      <button class="cal-nav" onclick="window._calNext()">›</button>
+    </div>
+    <div class="cal-grid">
+      <div class="cal-day-name">Do</div><div class="cal-day-name">Lu</div>
+      <div class="cal-day-name">Ma</div><div class="cal-day-name">Mi</div>
+      <div class="cal-day-name">Ju</div><div class="cal-day-name">Vi</div>
+      <div class="cal-day-name">Sa</div>`;
+    for(let i=0;i<firstDay;i++) html+=`<div></div>`;
+    for(let d=1;d<=daysInMonth;d++){
+      const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const isPast = dateStr < todayStr;
+      const isFull = (bookedDates[dateStr]||[]).length >= 10;
+      const isSel  = selDate===dateStr;
+      let cls = 'cal-day';
+      if(isPast)      cls += ' past';
+      else if(isFull) cls += ' full';
+      else            cls += ' avail';
+      if(isSel)       cls += ' sel';
+      if(isPast||isFull){
+        html+=`<div class="${cls}">${d}</div>`;
+      } else {
+        html+=`<div class="${cls}" onclick="window._selectDate('${dateStr}')">${d}</div>`;
+      }
+    }
+    html+=`</div>`;
+    cal.innerHTML=html;
+  }
+
+  window._calPrev=()=>{month--;if(month<0){month=11;year--;}render();};
+  window._calNext=()=>{month++;if(month>11){month=0;year++;}render();};
+  window._selectDate=(ds)=>{
+    selDate=ds; selTime=null;
+    render();
+    buildTimeSlots(ds);
+  };
+  render();
+}
+
+function buildTimeSlots(dateStr){
+  const wrap = document.getElementById('appt-times');
+  if(!wrap) return;
+  const slots = ['8:00 am','9:00 am','10:00 am','11:00 am','12:00 pm','2:00 pm','3:00 pm','4:00 pm','5:00 pm','6:00 pm'];
+  const taken = (bookedDates[dateStr]||[]);
+  wrap.innerHTML = '<div style="padding:0 0 8px;font-size:13px;color:var(--muted2);font-weight:600;">Horarios disponibles:</div>' +
+    slots.map(s=>{
+      const appt = taken.find(b=>(b.time||b)===s);
+      const isTaken = !!appt;
+      const isSel   = selTime===s;
+      let cls = 'time-btn';
+      if(isTaken) cls += ' booked';
+      else if(isSel) cls += ' sel';
+      else cls += ' avail';
+      return `<button class="${cls}" ${isTaken?'disabled':''} 
+        onclick="${isTaken?'':` window._selectTime('${s}')`}">${s}${isTaken?' ✕':''}</button>`;
+    }).join('');
+}
+
+window._selectTime=(t)=>{
+  selTime=t;
+  buildTimeSlots(selDate);
+  // Mostrar formulario y botón cuando se selecciona hora
+  const form = document.getElementById('appt-form');
+  if(form) form.style.display='';
+  const sendRow = document.getElementById('appt-send-row');
+  if(sendRow) sendRow.style.display='';
+  if(form) form.scrollIntoView({behavior:'smooth', block:'nearest'});
+};
+
+function selectOpt(o, card, type){
+  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('selected'));
+  card.classList.add('selected');
+  selOpt = o;
+
+  if(type==='restaurant'){
+    document.getElementById('flow-restaurant').style.display='';
+    document.getElementById('flow-appt').style.display='none';
+    document.getElementById('rest-badge').style.display='';
+    document.getElementById('rest-badge-name').textContent = o.name;
+    document.getElementById('rest-badge-price').textContent = o.price;
+    // Build table grid
+    const tg = document.getElementById('table-grid');
+    tg.innerHTML='';
+    for(let i=1;i<=12;i++){
+      const b=document.createElement('button');
+      b.className='table-btn'; b.textContent=i;
+      b.onclick=()=>{
+        document.querySelectorAll('.table-btn').forEach(x=>x.classList.remove('selected'));
+        b.classList.add('selected'); selTable=i;
+      };
+      tg.appendChild(b);
+    }
+    document.getElementById('flow-restaurant').scrollIntoView({behavior:'smooth',block:'nearest'});
+  } else {
+    document.getElementById('flow-appt').style.display='';
+    document.getElementById('flow-restaurant').style.display='none';
+    document.getElementById('appt-title').textContent = '📅 Reservar: '+o.name;
+    document.getElementById('appt-sub').textContent = o.price ? 'Precio: '+o.price : '';
+    document.getElementById('appt-badge').style.display='';
+    document.getElementById('appt-badge-name').textContent = o.name;
+    document.getElementById('appt-badge-price').textContent = o.price;
+    buildCalendar();
+    document.getElementById('flow-appt').scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+}
+
+function goClient(){buildClient();showPage('client');}
+
+function openAdmin(){showPage('admin');setTimeout(checkSubWarning,1000);}
+
+// ═══ LOAD FROM URL ════════════════════════════
+async function loadFromUrl(){
+  const params=new URLSearchParams(window.location.search);
+  const botId=params.get('id');
+  const v=params.get('v');
+
+  // Cargar desde servidor (con imágenes)
+  if(botId){
+    showLoading('Cargando...');
+    try{
+      const res=await fetch(API+'/bot/'+botId);
+      if(res.ok){
+        const j=await res.json();
+        if(j.ok&&j.data&&j.data.svc){
+          bizData=j.data; curSvc=j.data.svc;
+          // Check subscription
+          try{
+            const sub = await fbGet('subs/'+botId);
+            if(sub && sub.expiry){
+              const expired = new Date(sub.expiry) < new Date();
+              if(expired){ hideLoading(); showSuspended(bizData.name||'Este negocio'); return true; }
+            }
+          }catch(e){}
+          try{
+            const fbBk = await fbGet('bookings/'+botId);
+            bookedDates = fbBk || {};
+          }catch(e){bookedDates={};}
+          hideLoading();buildClient();showPage('client');return true;
+        }
+      }
+    }catch(e){}
+    // Fallback a localStorage si el servidor falla
+    try{
+      const stored=JSON.parse(localStorage.getItem(botId)||'null');
+      if(stored&&stored.svc){
+        bizData=stored;curSvc=stored.svc;
+        try{const bk=localStorage.getItem(botId+'_bk');bookedDates=bk?JSON.parse(bk):{};}catch(e){}
+        hideLoading();buildClient();showPage('client');return true;
+      }
+    }catch(e){}
+    hideLoading();showNotFound();return false;
+  }
+
+  // Cargar desde link comprimido (sin imágenes, fallback)
+  if(v){
+    try{
+      const json=LZString.decompressFromEncodedURIComponent(v);
+      if(!json){showNotFound();return false;}
+      const decoded=JSON.parse(json);
+      if(!decoded||!decoded.svc){showNotFound();return false;}
+      if(decoded._botId){
+        try{
+          const stored=JSON.parse(localStorage.getItem(decoded._botId)||'null');
+          if(stored){if(stored.logo)decoded.logo=stored.logo;decoded.opts=decoded.opts.map((o,i)=>({...o,imgData:stored.opts?.[i]?.imgData||null}));}
+          const bk=localStorage.getItem(decoded._botId+'_bk');bookedDates=bk?JSON.parse(bk):{};
+        }catch(e){bookedDates={};}
+      }
+      bizData=decoded;curSvc=decoded.svc;
+      buildClient();showPage('client');return true;
+    }catch(e){showNotFound();return false;}
+  }
+  return false;
+}
+
+function showSuspended(bizName){
+  document.querySelector('.page.active')?.classList.remove('active');
+  // Show suspended page
+  let pg = document.getElementById('page-suspended');
+  if(!pg){
+    pg = document.createElement('div');
+    pg.id = 'page-suspended';
+    pg.className = 'page active';
+    pg.innerHTML = `
+      <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;gap:16px;">
+        <div style="font-size:56px;">⏸️</div>
+        <h2 style="font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;">${bizName}</h2>
+        <p style="color:var(--muted2);font-size:15px;max-width:300px;">Este negocio tiene su servicio pausado temporalmente.<br>Contáctalos directamente para más información.</p>
+        <div style="background:var(--ink2);border:1px solid var(--border2);border-radius:12px;padding:16px 24px;font-size:13px;color:var(--muted2);">
+          Powered by ServiceBot
+        </div>
+      </div>`;
+    document.body.appendChild(pg);
+  } else {
+    pg.querySelector('h2').textContent = bizName;
+    pg.classList.add('active');
+  }
+}
+
+function showNotFound(){
+  hideLoading();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const err=document.getElementById('page-error');
+  if(err) err.classList.add('active');
+  else document.getElementById('page-home').classList.add('active');
+}
+function showLoading(t){const o=document.getElementById('loading-overlay');if(o){document.getElementById('loading-text').textContent=t||'Cargando...';o.classList.remove('hidden');}}
+function hideLoading(){const o=document.getElementById('loading-overlay');if(o)o.classList.add('hidden');}
+
+// ═══ TOAST ════════════════════════════════════
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ═══ WHATSAPP ═════════════════════════════════
+function sendOrder(){
+  if(!selOpt){toast('⚠️ Elige un plato');return;}
+  if(!selTable){toast('⚠️ Elige tu mesa');return;}
+  const msg=`🍽️ *NUEVO PEDIDO – ${bizData.name}*\n─────────────────\n🪑 Mesa: *${selTable}*\n🍴 Plato: *${selOpt.name}*\n💰 Precio: *${selOpt.price}*\n─────────────────\nEnviado desde ServiceBot`;
+  openWA(bizData.wa,msg);
+  showConfirm('🍽️','¡Pedido enviado!','Tu pedido llegó al restaurante por WhatsApp.',[
+    {l:'Restaurante',v:bizData.name},{l:'Plato',v:selOpt.name},
+    {l:'Precio',v:selOpt.price},{l:'Mesa',v:'Mesa '+selTable},
+  ],'restaurant');
+}
+
+async function searchApptToCancel(){
+  const phone = document.getElementById('cancel-phone').value.trim().replace(/\D/g,'');
+  if(!phone){toast('⚠️ Ingresa un número de celular');return;}
+  const results = document.getElementById('cancel-results');
+  results.innerHTML = '<p style="color:var(--muted2);font-size:13px;">Buscando...</p>';
+  
+  // Search all dates for appointments matching this phone
+  const found = [];
+  Object.entries(bookedDates).forEach(([date, appts])=>{
+    (appts||[]).forEach((appt,idx)=>{
+      if(appt && appt.phone && appt.phone.replace(/\D/g,'').includes(phone)){
+        const [y,m,d] = date.split('-');
+        found.push({date, dateStr:`${parseInt(d)} de ${MONTHS[parseInt(m)-1]} ${y}`, idx, appt});
+      }
+    });
+  });
+
+  if(!found.length){
+    results.innerHTML = '<p style="color:var(--warn);font-size:13px;">❌ No se encontraron citas con ese número.</p>';
+    return;
+  }
+
+  results.innerHTML = found.map(({date,dateStr,idx,appt})=>`
+    <div class="appt-card">
+      <div class="appt-card-header">
+        <span class="appt-card-name">👤 ${appt.name}</span>
+        <span class="appt-card-time">⏰ ${appt.time}</span>
+      </div>
+      <div class="appt-card-detail">✂️ ${appt.service} · 💰 ${appt.price}</div>
+      <div class="appt-card-detail">📆 ${dateStr}</div>
+      <div style="margin-top:10px;">
+        <button class="btn-cancel-appt" onclick="cancelAppt('${date}',${idx})">❌ Cancelar esta cita</button>
+      </div>
+    </div>`).join('');
+}
+
+async function cancelAppt(date, idx){
+  if(!confirm('¿Seguro que quieres cancelar esta cita?')) return;
+  if(!bookedDates[date]) return;
+  const appt = bookedDates[date][idx];
+  bookedDates[date].splice(idx, 1);
+  if(bookedDates[date].length === 0) delete bookedDates[date];
+  
+  if(bizData._botId){
+    try{localStorage.setItem(bizData._botId+'_bk',JSON.stringify(bookedDates));}catch(e){}
+    await fbSet('bookings/'+bizData._botId, bookedDates);
+  }
+  toast('✅ Cita cancelada');
+  // Notify business via WhatsApp
+  if(appt && bizData.wa){
+    const msg = `❌ *CITA CANCELADA – ${bizData.name}*\n─────────────────\n✂️ Servicio: *${appt.service}*\n📆 Fecha: *${date}*\n⏰ Hora: *${appt.time}*\n👤 Cliente: *${appt.name}*\n📱 Celular: *${appt.phone}*\n─────────────────\nCancelado desde ServiceBot`;
+    if(confirm('¿Notificar al negocio por WhatsApp?')) openWA(bizData.wa, msg);
+  }
+  document.getElementById('cancel-results').innerHTML = '<p style="color:var(--accent);font-size:13px;">✅ Cita cancelada exitosamente.</p>';
+  buildCalendar();
+}
+
+async function sendAppt(){
+  const name=document.getElementById('appt-name').value.trim();
+  const phone=document.getElementById('appt-phone').value.trim();
+  if(!selOpt){toast('⚠️ Elige un servicio');return;}
+  if(!selDate){toast('⚠️ Elige una fecha');return;}
+  if(!selTime){toast('⚠️ Elige una hora');return;}
+  if(!name){toast('⚠️ Ingresa tu nombre');return;}
+  if(!phone){toast('⚠️ Ingresa tu celular');return;}
+  const note=document.getElementById('appt-note').value;
+  const [y,m,d]=selDate.split('-');
+  const dateStr=`${parseInt(d)} de ${MONTHS[parseInt(m)-1]} ${y}`;
+  if(!bookedDates[selDate])bookedDates[selDate]=[];
+  const alreadyBooked = bookedDates[selDate].find(b=>(b.time||b)===selTime);
+  if(alreadyBooked){toast('⚠️ Esa hora ya fue reservada');return;}
+  // Guardar detalles completos de la cita
+  const apptObj = {time:selTime, name, phone, service:selOpt.name, price:selOpt.price, note, date:selDate};
+  bookedDates[selDate].push(apptObj);
+  if(bizData._botId){
+    try{localStorage.setItem(bizData._botId+'_bk',JSON.stringify(bookedDates));}catch(e){}
+    await fbSet('bookings/'+bizData._botId, bookedDates);
+  }
+  // Show payment screen if configured, otherwise send directly
+  const pay = bizData.pay;
+  if(pay && pay.method && pay.qr){
+    // Show payment UI
+    document.getElementById('flow-payment').style.display='';
+    document.getElementById('pay-method-title').textContent = pay.method + (pay.number ? ' — ' + pay.number : '');
+    document.getElementById('pay-number-show').textContent = 'Escanea el QR para pagar';
+    const qrEl = document.getElementById('pay-qr-img');
+    qrEl.src = pay.qr; qrEl.style.display = 'block';
+    document.getElementById('flow-payment').scrollIntoView({behavior:'smooth',block:'nearest'});
+    return; // sendApptFinal will be called from the payment buttons
+  }
+  sendApptFinal(false);
+}
+
+async function confirmPayNow(){ document.getElementById('flow-payment').style.display='none'; sendApptFinal(true); }
+async function confirmPayLater(){ document.getElementById('flow-payment').style.display='none'; sendApptFinal(false); }
+
+async function sendApptFinal(paid){
+  const name=document.getElementById('appt-name').value.trim();
+  const phone=document.getElementById('appt-phone').value.trim();
+  const note=document.getElementById('appt-note').value;
+  const [y,m,d]=selDate.split('-');
+  const dateStr=`${parseInt(d)} de ${MONTHS[parseInt(m)-1]} ${y}`;
+
+  // Save booking to Firebase
+  if(!bookedDates[selDate]) bookedDates[selDate]=[];
+  const apptObj = {time:selTime, name, phone, service:selOpt.name, price:selOpt.price, note, date:selDate, paid};
+  bookedDates[selDate].push(apptObj);
+  if(bizData._botId){
+    try{localStorage.setItem(bizData._botId+'_bk',JSON.stringify(bookedDates));}catch(e){}
+    await fbSet('bookings/'+bizData._botId, bookedDates);
+  }
+  buildTimeSlots(selDate);
+
+  const payStatus = paid ? '\n💳 Pago: *Ya pagó anticipado*' : (bizData.pay && bizData.pay.method ? '\n💵 Pago: *Pagará en el negocio*' : '');
+  const msg=`📅 *NUEVA RESERVA – ${bizData.name}*\n─────────────────\n✂️ Servicio: *${selOpt.name}*\n💰 Precio: *${selOpt.price}*\n📆 Fecha: *${dateStr}*\n⏰ Hora: *${selTime}*\n👤 Cliente: *${name}*\n📱 Celular: *${phone}*${note?'\n📝 Nota: '+note:''}${payStatus}\n─────────────────\nEnviado desde ServiceBot`;
+  openWA(bizData.wa,msg);
+  showConfirm('📅','¡Reserva confirmada!','Tu cita llegó al negocio por WhatsApp.',[
+    {l:'Negocio',v:bizData.name},{l:'Servicio',v:selOpt.name},
+    {l:'Precio',v:selOpt.price},{l:'Fecha',v:dateStr},
+    {l:'Hora',v:selTime},{l:'Cliente',v:name},{l:'Celular',v:phone},
+    ...(paid?[{l:'Pago',v:'✅ Pagado anticipado'}]:[{l:'Pago',v:'💵 Paga en el negocio'}]),
+  ],'appt');
+}
+
+function openWA(phone,msg){
+  const num=(phone||'').replace(/\D/g,'');
+  if(!num){toast('⚠️ El negocio no configuró su WhatsApp');return;}
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+// ═══ CONFIRMATION ════════════════════════════
+function showConfirm(icon,title,sub,rows,type){
+  document.getElementById('conf-icon').textContent=icon;
+  document.getElementById('conf-title').textContent=title;
+  document.getElementById('conf-sub').textContent=sub;
+  document.getElementById('conf-details').innerHTML=rows.map(r=>`<div class="confirm-row"><span class="confirm-row-lbl">${r.l}</span><span class="confirm-row-val">${h(r.v)}</span></div>`).join('');
+  const btns=document.getElementById('conf-btns');
+  if(type==='restaurant'){
+    btns.innerHTML=`<button class="btn btn-accent" style="width:100%;" onclick="resetClient()">🔄 Hacer otro pedido</button><button class="btn btn-ghost" style="width:100%;" onclick="resetClient()">✓ Finalizar</button>`;
+  }else{
+    btns.innerHTML=`<button class="btn btn-accent" style="width:100%;" onclick="resetClient()">✓ Finalizar</button>`;
+  }
+  showPage('confirm');
+}
+
+function resetClient(){
+  selOpt=null;selDate=null;selTime=null;selTable=null;
+  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('flow-restaurant').style.display='none';
+  document.getElementById('flow-appt').style.display='none';
+  showPage('client');
+}
+
+// ═══ PERSIST ADMIN ═══════════════════════════
+function saveAdminState(){
+  try{
+    localStorage.setItem('sb_admin',JSON.stringify({
+      svc:curSvc,
+      name:document.getElementById('biz-name').value,
+      desc:document.getElementById('biz-desc').value,
+      wa:document.getElementById('biz-wa').value,
+      logo:logoUrl,
+      opts:JSON.parse(JSON.stringify(opts)),
+      bizData:bizData
+    }));
+  }catch(e){}
+}
+
+function restoreAdminState(){
+  try{
+    const state=JSON.parse(localStorage.getItem('sb_admin')||'null');
+    if(!state||!state.svc) return false;
+    curSvc=state.svc; bizData=state.bizData||{};
+    const s=SVCS[curSvc];
+    const b=document.getElementById('admin-badge');
+    b.textContent=s.emoji+' '+s.name;
+    b.style.cssText=`background:${s.color}18;border:1px solid ${s.color}40;color:${s.color};padding:5px 14px;border-radius:99px;font-size:12px;font-weight:700;`;
+    document.getElementById('opts-label').textContent='✦ '+s.optLabel;
+    document.getElementById('opts-sub').textContent=s.optSub;
+    document.getElementById('biz-name').value=state.name||'';
+    document.getElementById('biz-desc').value=state.desc||'';
+    document.getElementById('biz-wa').value=state.wa||'';
+    logoUrl=state.logo||null;
+    if(logoUrl){
+      const img=document.getElementById('logo-img');
+      img.src=logoUrl;img.style.display='block';
+      document.getElementById('logo-ph').style.display='none';
+    }
+    opts=state.opts||[];
+    renderOpts();livePreview();
+    // Restore payment fields
+    const pay = state.pay || (bizData && bizData.pay) || {};
+    if(pay.method) document.getElementById('pay-method').value=pay.method;
+    if(pay.number) document.getElementById('pay-number').value=pay.number;
+    if(pay.qr){
+      qrUrl=pay.qr;
+      const qi=document.getElementById('qr-img');
+      qi.src=pay.qr; qi.style.display='block';
+      document.getElementById('qr-ph').style.display='none';
+    }
+    showPage('admin');
+    return true;
+  }catch(e){return false;}
+}
+
+document.getElementById('biz-name')?.addEventListener('input',saveAdminState);
+document.getElementById('biz-desc')?.addEventListener('input',saveAdminState);
+document.getElementById('biz-wa')?.addEventListener('input',saveAdminState);
+
+// ── Arrancar
+(async()=>{const loaded=await loadFromUrl();if(!loaded)restoreAdminState();})();
+</script>
+</body>
+</html>
